@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>MagicNumber:Templating.kt$10</ID>
+    <ID>MaxLineLength:Application.kt$@Suppress("unused")</ID>
+    <ID>NewLineAtEndOfFile:ApplicationTest.kt$com.oguzhanaslann.ApplicationTest.kt</ID>
+    <ID>WildcardImport:Application.kt$import com.oguzhanaslann.plugins.*</ID>
+    <ID>WildcardImport:Application.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:HTTP.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:HTTP.kt$import io.ktor.features.*</ID>
+    <ID>WildcardImport:HTTP.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:HTTP.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Monitoring.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:Monitoring.kt$import io.ktor.features.*</ID>
+    <ID>WildcardImport:Monitoring.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:Monitoring.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Monitoring.kt$import org.slf4j.event.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.http.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.http.content.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Routing.kt$import io.ktor.routing.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.auth.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.auth.jwt.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Security.kt$import io.ktor.util.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.features.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.routing.*</ID>
+    <ID>WildcardImport:Serialization.kt$import io.ktor.serialization.*</ID>
+    <ID>WildcardImport:Templating.kt$import io.ktor.application.*</ID>
+    <ID>WildcardImport:Templating.kt$import io.ktor.html.*</ID>
+    <ID>WildcardImport:Templating.kt$import io.ktor.request.*</ID>
+    <ID>WildcardImport:Templating.kt$import io.ktor.response.*</ID>
+    <ID>WildcardImport:Templating.kt$import io.ktor.routing.*</ID>
+    <ID>WildcardImport:Templating.kt$import kotlinx.html.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

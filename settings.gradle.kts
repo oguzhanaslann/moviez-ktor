@@ -1,0 +1,1 @@
+rootProject.name = "com.oguzhanaslann.movies-server-ktor"

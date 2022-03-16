@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>detekt report</title>
+    <style>
+h2 {
+  background-color: #666666;
+  padding: 0.2em;
+  color: #ffffff;
+}
+h3 {
+  background-color:#f8dfdf;
+  padding:0.5em;
+}
+.rule {
+  background-color: #dddddd;
+  padding: 0.3em;
+  font-weight: bold;
+}
+.description {
+  color:#000000;
+  padding:0.3em;
+}
+.location {
+  color: #690505;
+  font-family: monospace;
+  display: block;
+}
+.message {
+  font-size: 0.8em;
+  color: #444444;
+  display: block;
+  margin-top: 1pt;
+}
+.rule-container {
+  border: 0.1em dashed #dddddd;
+  padding: 0.1em;
+  line-height: 1.5em;
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+pre {
+  border: 1px solid #e0e0e0;
+  overflow: scroll;
+}
+.lineno {
+  color: #999999;
+  background-color: #f0f0f0;
+}
+.error {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwCFR4T/3uLMgAAADxJREFUCNdNyLERQEAABMCjL4lQwIzcjErpguAL+C9AvgKJDbeD/PRpLdm35Hm+MU+cB+tCKaJW4L4YBy+CAiLJrFs9mgAAAABJRU5ErkJggg==) bottom repeat-x;
+}
+.exception {
+  color: #b60808;
+  display: inline-block;
+  background-color: #ecdada;
+  border-color: #b60808;
+  border-radius: 10px;
+  border: solid 2px;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+
+<h1>detekt report</h1>
+
+<h2>Metrics</h2>
+
+<div>
+  <ul>
+    <li>25 number of properties</li>
+    <li>14 number of functions</li>
+    <li>7 number of classes</li>
+    <li>7 number of packages</li>
+    <li>16 number of kt files</li>
+  </ul>
+</div>
+
+
+<h2>Complexity Report</h2>
+
+<div>
+  <ul>
+    <li>385 lines of code (loc)</li>
+    <li>280 source lines of code (sloc)</li>
+    <li>143 logical lines of code (lloc)</li>
+    <li>16 comment lines of code (cloc)</li>
+    <li>19 cyclomatic complexity (mcc)</li>
+    <li>10 cognitive complexity</li>
+    <li>10 number of total code smells</li>
+    <li>5% comment source ratio</li>
+    <li>132 mcc per 1,000 lloc</li>
+    <li>69 code smells per 1,000 lloc</li>
+  </ul>
+</div>
+
+
+<h2>Findings</h2>
+<div>Total: 10
+  <h3>style: 10</h3>
+  <details id="MagicNumber" open="open">
+    <summary class="rule-container"><span class="rule">MagicNumber: 1 </span><span class="description">Report magic numbers. Magic number is a numeric literal that is not defined as a constant and hence it's unclear what the purpose of this number is. It's better to declare such numbers as constants and give them a proper name. By default, -1, 0, 1, and 2 are not considered to be magic numbers.</span></summary>
+    <ul>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/plugins/Timeout.kt:8:39</span><span class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+        <pre><code><span class="lineno">   5 </span>import io.ktor.client.features.*
+<span class="lineno">   6 </span>
+<span class="lineno">   7 </span>fun HttpClientConfig&lt;CIOEngineConfig&gt;.configureTimeouts() {
+<span class="lineno">   8 </span>    val thirtySecondsInMillis: Long = <span class="error">30000</span>
+<span class="lineno">   9 </span>    install(HttpTimeout) {
+<span class="lineno">  10 </span>        requestTimeoutMillis = thirtySecondsInMillis
+<span class="lineno">  11 </span>    }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="NewLineAtEndOfFile" open="open">
+    <summary class="rule-container"><span class="rule">NewLineAtEndOfFile: 1 </span><span class="description">Checks whether files end with a line separator.</span></summary>
+    <ul>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/di/NetworkModules.kt:12:2</span><span class="message">The file /Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/di/NetworkModules.kt is not ending with a new line.</span>
+        <pre><code><span class="lineno">   9 </span>        MovieClient.getInstance()
+<span class="lineno">  10 </span>    }
+<span class="lineno">  11 </span>
+<span class="lineno">  12 </span>}
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="UnusedPrivateMember" open="open">
+    <summary class="rule-container"><span class="rule">UnusedPrivateMember: 1 </span><span class="description">Private member is unused.</span></summary>
+    <ul>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/MovieClient.kt:11:5</span><span class="message">Private property ktorClient is unused.</span>
+        <pre><code><span class="lineno">   8 </span>
+<span class="lineno">   9 </span>class MovieClient {
+<span class="lineno">  10 </span>
+<span class="lineno">  11 </span>    <span class="error">private val ktorClient by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {</span>
+<span class="lineno">  12 </span><span class="error">        HttpClient(CIO) {</span>
+<span class="lineno">  13 </span><span class="error">            configureLogging()</span>
+<span class="lineno">  14 </span><span class="error">            configureJsonFeature()</span>
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="WildcardImport" open="open">
+    <summary class="rule-container"><span class="rule">WildcardImport: 7 </span><span class="description">Wildcard imports should be replaced with imports using fully qualified class names. Wildcard imports can lead to naming conflicts. A library update can introduce naming clashes with your classes which results in compilation errors.</span></summary>
+    <ul>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/MovieClient.kt:6:1</span><span class="message">io.ktor.client.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   3 </span>import com.oguzhanaslann.dataSource.network.client.plugins.configureJsonFeature
+<span class="lineno">   4 </span>import com.oguzhanaslann.dataSource.network.client.plugins.configureLogging
+<span class="lineno">   5 </span>import com.oguzhanaslann.dataSource.network.client.plugins.configureTimeouts
+<span class="lineno">   6 </span><span class="error">import io.ktor.client.*</span>
+<span class="lineno">   7 </span>import io.ktor.client.engine.cio.*
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>class MovieClient {
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/MovieClient.kt:7:1</span><span class="message">io.ktor.client.engine.cio.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   4 </span>import com.oguzhanaslann.dataSource.network.client.plugins.configureLogging
+<span class="lineno">   5 </span>import com.oguzhanaslann.dataSource.network.client.plugins.configureTimeouts
+<span class="lineno">   6 </span>import io.ktor.client.*
+<span class="lineno">   7 </span><span class="error">import io.ktor.client.engine.cio.*</span>
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>class MovieClient {
+<span class="lineno">  10 </span>
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/plugins/Logging.kt:5:1</span><span class="message">io.ktor.client.features.logging.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import io.ktor.client.HttpClientConfig
+<span class="lineno">   4 </span>import io.ktor.client.engine.cio.CIOEngineConfig
+<span class="lineno">   5 </span><span class="error">import io.ktor.client.features.logging.*</span>
+<span class="lineno">   6 </span>
+<span class="lineno">   7 </span>fun HttpClientConfig&lt;CIOEngineConfig&gt;.configureLogging() {
+<span class="lineno">   8 </span>    install(Logging) {
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/dataSource/network/client/plugins/Timeout.kt:5:1</span><span class="message">io.ktor.client.features.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import io.ktor.client.HttpClientConfig
+<span class="lineno">   4 </span>import io.ktor.client.engine.cio.CIOEngineConfig
+<span class="lineno">   5 </span><span class="error">import io.ktor.client.features.*</span>
+<span class="lineno">   6 </span>
+<span class="lineno">   7 </span>fun HttpClientConfig&lt;CIOEngineConfig&gt;.configureTimeouts() {
+<span class="lineno">   8 </span>    val thirtySecondsInMillis: Long = 30000
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/plugins/DependencyInjection.kt:5:1</span><span class="message">io.ktor.application.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import com.oguzhanaslann.di.coroutineScope
+<span class="lineno">   4 </span>import com.oguzhanaslann.di.networkModule
+<span class="lineno">   5 </span><span class="error">import io.ktor.application.*</span>
+<span class="lineno">   6 </span>import kotlinx.coroutines.CoroutineScope
+<span class="lineno">   7 </span>import org.koin.ktor.ext.Koin
+<span class="lineno">   8 </span>
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/plugins/Routing.kt:8:1</span><span class="message">io.ktor.auth.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   5 </span>import com.oguzhanaslann.base.ONE_HOUR_MINUTES
+<span class="lineno">   6 </span>import com.oguzhanaslann.base.ONE_MINUTE_MILLIS
+<span class="lineno">   7 </span>import io.ktor.application.*
+<span class="lineno">   8 </span><span class="error">import io.ktor.auth.*</span>
+<span class="lineno">   9 </span>import io.ktor.auth.jwt.*
+<span class="lineno">  10 </span>import io.ktor.http.*
+<span class="lineno">  11 </span>import io.ktor.http.content.*
+</code></pre>
+      </li>
+      <li><span class="location">/Users/oguzhanaslan/Desktop/movies-server-ktor/src/main/kotlin/com/oguzhanaslann/plugins/Routing.kt:9:1</span><span class="message">io.ktor.auth.jwt.* is a wildcard import. Replace it with fully qualified imports.</span>
+        <pre><code><span class="lineno">   6 </span>import com.oguzhanaslann.base.ONE_MINUTE_MILLIS
+<span class="lineno">   7 </span>import io.ktor.application.*
+<span class="lineno">   8 </span>import io.ktor.auth.*
+<span class="lineno">   9 </span><span class="error">import io.ktor.auth.jwt.*</span>
+<span class="lineno">  10 </span>import io.ktor.http.*
+<span class="lineno">  11 </span>import io.ktor.http.content.*
+<span class="lineno">  12 </span>import io.ktor.request.*
+</code></pre>
+      </li>
+    </ul>
+  </details>
+</div>
+
+
+generated with <a href="https://detekt.github.io/">detekt version 1.19.0</a> on 2022-03-16 19:37:19 UTC.
+
+</body>
+</html>

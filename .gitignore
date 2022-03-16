@@ -1,0 +1,10 @@
+/src/main/resources/logback.xml
+/src/main/resources/application.conf
+/build
+/.idea/
+/detekt-baseline.xml
+/config
+/gradle.properties
+/gradlew
+/gradlew.bat
+/.gradle
