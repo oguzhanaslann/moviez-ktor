@@ -9,6 +9,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
 
     id("io.gitlab.arturbosch.detekt").version("1.19.0")
+
 }
 
 group = "com.oguzhanaslann"

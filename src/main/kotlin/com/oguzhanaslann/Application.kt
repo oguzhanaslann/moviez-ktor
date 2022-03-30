@@ -1,15 +1,21 @@
 package com.oguzhanaslann
 
 import com.oguzhanaslann.dataSource.db.Movies
+import com.oguzhanaslann.dataSource.db.Users
+import com.oguzhanaslann.di.Scopes
 import com.oguzhanaslann.plugins.*
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.koin.core.qualifier.named
+import org.koin.ktor.ext.get
 
 /**
  *  auto-reload : ./gradlew -t build (exclude tests "-x test -i")
@@ -25,7 +31,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
-    configureDatabaseConnection()
+    configureDatabase()
     configureDependencyInjection()
     configureSecurity()
     configureRouting()
@@ -34,6 +40,3 @@ fun Application.module() {
     configureMonitoring()
     configureHTTP()
 }
-
-
-
