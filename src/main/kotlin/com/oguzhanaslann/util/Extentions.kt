@@ -47,6 +47,7 @@ suspend fun <T, R> Result<T>.combine(
 
         isFailure -> {
             onMainResultFail()
+
         }
 
         otherResult.isFailure -> {
