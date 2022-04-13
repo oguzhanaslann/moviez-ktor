@@ -101,14 +101,3 @@ class UserDatabaseOperationsHandler(
         return insertStatement.insertedCount
     }
 }
-
-fun main() {
-    val password = "password"
-    val salt = ByteArray(16)
-    val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 128)
-    val f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
-    val hash = f.generateSecret(spec).encoded
-    val enc: Base64.Encoder = Base64.getEncoder()
-    System.out.printf("salt: %s%n", enc.encodeToString(salt))
-    System.out.printf("hash: %s%n", enc.encodeToString(hash))
-}

@@ -5,10 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.oguzhanaslann.base.ONE_HOUR_MINUTES
 import com.oguzhanaslann.base.ONE_MINUTE_MILLIS
 import com.oguzhanaslann.dataSource.db.UsersDAO
+import com.oguzhanaslann.domainModel.User
 import com.oguzhanaslann.plugins.routing.LOGIN
 import com.oguzhanaslann.plugins.routing.REGISTER
 import com.oguzhanaslann.util.chain
 import com.oguzhanaslann.util.chainBySelfPredicate
+import com.oguzhanaslann.util.isNotNull
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -19,22 +21,28 @@ import org.koin.ktor.ext.get
 import java.util.*
 
 fun Application.configureRouting() {
+    loginRouting()
+    userRouting()
+}
+
+fun Application.userRouting() {
     routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
-        // Static plugin. Try to access `/static/index.html`
-        static("/static") {
-            resources("static")
+        get("/user/{id}") {
+            val id =    call.parameters["id"]?.toLongOrNull()
+
+            if (id.isNotNull()) {
+                call.respond(User("email","pass"))
+            }  else {
+                call.respond(HttpStatusCode.BadRequest,"Please provide a proper id value.")
+            }
         }
     }
-
-    loginRouting()
 }
 
 private fun Application.loginRouting() {
     val usersDAO = get<UsersDAO>()
     routing {
+
         post(LOGIN) {
             val formParameters = call.receiveParameters()
             val email = formParameters["email"].toString()
