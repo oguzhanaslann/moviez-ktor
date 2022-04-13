@@ -87,6 +87,7 @@ private fun Application.loginRouting() {
                 onSuccess = { hasRegistered ->
                     if (hasRegistered) {
                         val token = getUserToken(email, password)
+                        usersDAO.logTable()
                         call.respond(HttpStatusCode.OK, token)
                     } else {
                         call.respond(HttpStatusCode.BadRequest, "Registration failed")

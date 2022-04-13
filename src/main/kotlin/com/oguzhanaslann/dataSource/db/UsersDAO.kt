@@ -1,11 +1,18 @@
 package com.oguzhanaslann.dataSource.db
 
-import kotlinx.coroutines.CoroutineScope
+import com.oguzhanaslann.util.SecurityManager
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.koin.core.component.getScopeName
+import java.security.spec.KeySpec
+import java.util.*
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
+
 
 abstract class DAO {
     protected suspend fun <T> runSafeDBOperation(
@@ -39,12 +46,26 @@ abstract class UsersDAO : DAO() {
         }
     }
 
+    suspend fun logTable() {
+        newSuspendedTransaction {
+            val whole = Users.selectAll()
+
+            whole.forEach {
+                println("pass : ${it[Users.password]}")
+
+            }
+
+        }
+    }
+
     protected abstract suspend fun getUsersWithEmail(email: String): Long
     protected abstract suspend fun getUsersWithPassword(email: String, password: String): Long
     protected abstract suspend fun insertNewUserWith(email: String, password: String): Int
 }
 
-class UserDatabaseOperationsHandler(private val coroutineScope: CoroutineScope) : UsersDAO() {
+class UserDatabaseOperationsHandler(
+    private val securityManager: SecurityManager
+) : UsersDAO() {
     override suspend fun getUsersWithEmail(email: String): Long {
         val users = newSuspendedTransaction(Dispatchers.IO) {
             val users = Users.select {
@@ -60,7 +81,7 @@ class UserDatabaseOperationsHandler(private val coroutineScope: CoroutineScope) 
     override suspend fun getUsersWithPassword(email: String, password: String): Long {
         val users = newSuspendedTransaction {
             val user = Users.select {
-                (Users.email eq email) and (Users.password eq password)
+                (Users.email eq email) and (Users.password eq securityManager.hash(password))
             }
 
             user.count()
@@ -69,13 +90,25 @@ class UserDatabaseOperationsHandler(private val coroutineScope: CoroutineScope) 
     }
 
     override suspend fun insertNewUserWith(email: String, password: String): Int {
+
         val insertStatement = newSuspendedTransaction {
             Users.insert {
                 it[Users.email] = email
-                it[Users.password] = password
+                it[Users.password] = securityManager.hash(password)
             }
         }
 
         return insertStatement.insertedCount
     }
+}
+
+fun main() {
+    val password = "password"
+    val salt = ByteArray(16)
+    val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, 65536, 128)
+    val f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
+    val hash = f.generateSecret(spec).encoded
+    val enc: Base64.Encoder = Base64.getEncoder()
+    System.out.printf("salt: %s%n", enc.encodeToString(salt))
+    System.out.printf("hash: %s%n", enc.encodeToString(hash))
 }
