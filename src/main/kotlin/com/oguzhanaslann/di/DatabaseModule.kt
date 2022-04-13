@@ -2,14 +2,18 @@ package com.oguzhanaslann.di
 
 import com.oguzhanaslann.dataSource.db.UserDatabaseOperationsHandler
 import com.oguzhanaslann.dataSource.db.UsersDAO
-import kotlinx.coroutines.CoroutineScope
-import org.koin.core.qualifier.named
+import com.oguzhanaslann.util.SecurityManager
 import org.koin.dsl.module
 
 val databaseModule = module {
+    factory<SecurityManager> {
+       com.oguzhanaslann.util.SecurityManager()
+    }
     single<UsersDAO> {
         UserDatabaseOperationsHandler(
-            get<CoroutineScope>(named(Scopes.IO))
+            get()
         )
     }
+
+
 }
