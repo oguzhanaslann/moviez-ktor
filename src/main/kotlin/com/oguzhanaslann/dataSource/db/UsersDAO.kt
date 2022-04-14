@@ -1,17 +1,13 @@
 package com.oguzhanaslann.dataSource.db
 
+import com.oguzhanaslann.dataSource.db.entity.UserEntity
 import com.oguzhanaslann.util.SecurityManager
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.koin.core.component.getScopeName
-import java.security.spec.KeySpec
-import java.util.*
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
+import org.jetbrains.exposed.sql.update
 
 
 abstract class DAO {
@@ -46,21 +42,25 @@ abstract class UsersDAO : DAO() {
         }
     }
 
-    suspend fun logTable() {
-        newSuspendedTransaction {
-            val whole = Users.selectAll()
+    suspend fun getIsUserWithIdExists(id: Int): Result<Boolean> {
+        return runSafeDBOperation {
+            val users = getUsersWithId(id)
+            users == 1L
+        }
+    }
 
-            whole.forEach {
-                println("pass : ${it[Users.password]}")
-
-            }
-
+    suspend fun updateUser(userEntity: UserEntity): Result<Boolean> {
+        return runSafeDBOperation {
+            val updatedRow = updateUserWith(userEntity)
+            updatedRow == 1L
         }
     }
 
     protected abstract suspend fun getUsersWithEmail(email: String): Long
     protected abstract suspend fun getUsersWithPassword(email: String, password: String): Long
     protected abstract suspend fun insertNewUserWith(email: String, password: String): Int
+    protected abstract suspend fun getUsersWithId(id: Int): Long
+    protected abstract suspend fun updateUserWith(userEntity: UserEntity): Long
 }
 
 class UserDatabaseOperationsHandler(
@@ -90,7 +90,6 @@ class UserDatabaseOperationsHandler(
     }
 
     override suspend fun insertNewUserWith(email: String, password: String): Int {
-
         val insertStatement = newSuspendedTransaction {
             Users.insert {
                 it[Users.email] = email
@@ -99,5 +98,49 @@ class UserDatabaseOperationsHandler(
         }
 
         return insertStatement.insertedCount
+    }
+
+    override suspend fun getUsersWithId(id: Int): Long {
+        val userCount = newSuspendedTransaction {
+            val users = Users.select {
+                (Users.id eq id)
+            }
+
+            users.count()
+        }
+
+        return userCount
+    }
+
+    override suspend fun updateUserWith(userEntity: UserEntity): Long {
+        val updateRows = newSuspendedTransaction {
+            val transaction = this
+            val isExistingUserResult = getIsUserWithEmailExists(userEntity.email)
+
+            if (isExistingUserResult.isFailure) {
+                transaction.close()
+            }
+
+            val isExistingUser = isExistingUserResult.getOrDefault(true)
+
+            if (isExistingUser) {
+                transaction.close()
+            }
+
+            val updateRows = Users.update(
+                where = {
+                    Users.id eq userEntity.id
+                },
+                body = {
+                    it[email] = userEntity.email
+                    it[firstName] = userEntity.firstName
+                    it[lastName] = userEntity.lastName
+                }
+            )
+
+            updateRows
+        }
+
+        return updateRows.toLong()
     }
 }
