@@ -1,6 +1,6 @@
 package com.oguzhanaslann
 
-import com.oguzhanaslann.plugins.configureRouting
+import com.oguzhanaslann.plugins.routing.configureRouting
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.test.Test

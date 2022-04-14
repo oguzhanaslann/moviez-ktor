@@ -1,19 +1,17 @@
-package com.oguzhanaslann.plugins
+package com.oguzhanaslann.plugins.routing
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.oguzhanaslann.base.ONE_HOUR_MINUTES
 import com.oguzhanaslann.base.ONE_MINUTE_MILLIS
 import com.oguzhanaslann.dataSource.db.UsersDAO
+import com.oguzhanaslann.dataSource.db.mapping.mapToEntity
 import com.oguzhanaslann.domainModel.User
-import com.oguzhanaslann.plugins.routing.LOGIN
-import com.oguzhanaslann.plugins.routing.REGISTER
-import com.oguzhanaslann.util.chain
 import com.oguzhanaslann.util.chainBySelfPredicate
 import com.oguzhanaslann.util.isNotNull
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -26,14 +24,42 @@ fun Application.configureRouting() {
 }
 
 fun Application.userRouting() {
+    val usersDAO = get<UsersDAO>()
     routing {
-        get("/user/{id}") {
-            val id =    call.parameters["id"]?.toLongOrNull()
+        authenticate {
+            get(USER_WITH_ID) {
+                val id = call.parameters["id"]?.toLongOrNull()
 
-            if (id.isNotNull()) {
-                call.respond(User("email","pass"))
-            }  else {
-                call.respond(HttpStatusCode.BadRequest,"Please provide a proper id value.")
+                if (id.isNotNull()) {
+                    call.respond(User(1, "pass", "fname", "lname"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Please provide a proper id value.")
+                }
+            }
+
+            post(USER) {
+                val user = call.receive<User>()
+                println(user)
+                val isExistsInDBResult = usersDAO.getIsUserWithIdExists(user.id)
+
+                isExistsInDBResult.chainBySelfPredicate(
+                    onPredicateFalse = {
+                        call.respond(HttpStatusCode.BadRequest,"No such a user with id: ${user.id}")
+                    },
+                    onMainResultFail = {
+                        call.respond(HttpStatusCode.InternalServerError,"Something went wrong")
+                    },
+                    resultBuilderBlock = {
+                        usersDAO.updateUser(user.mapToEntity())
+                    },
+                    onSuccess = { _ ->
+                        call.respond(HttpStatusCode.OK)
+                    },
+                    onOtherResultFail = {
+                        call.respond(HttpStatusCode.BadRequest,"User could not be updated")
+                    }
+                )
+
             }
         }
     }
@@ -95,7 +121,6 @@ private fun Application.loginRouting() {
                 onSuccess = { hasRegistered ->
                     if (hasRegistered) {
                         val token = getUserToken(email, password)
-                        usersDAO.logTable()
                         call.respond(HttpStatusCode.OK, token)
                     } else {
                         call.respond(HttpStatusCode.BadRequest, "Registration failed")
