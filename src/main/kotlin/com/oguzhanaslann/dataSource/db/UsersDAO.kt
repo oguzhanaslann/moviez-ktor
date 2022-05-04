@@ -1,5 +1,6 @@
 package com.oguzhanaslann.dataSource.db
 
+import com.oguzhanaslann.base.ResultNotFoundException
 import com.oguzhanaslann.dataSource.db.entity.UserEntity
 import com.oguzhanaslann.util.SecurityManager
 import kotlinx.coroutines.Dispatchers
@@ -56,11 +57,18 @@ abstract class UsersDAO : DAO() {
         }
     }
 
+    suspend fun getUserWithId(id: Int): Result<UserEntity> {
+        return runSafeDBOperation {
+            getUserWithIdFromDb(id) ?: throw  ResultNotFoundException("User with Id: $id is not found")
+        }
+    }
+
     protected abstract suspend fun getUsersWithEmail(email: String): Long
     protected abstract suspend fun getUsersWithPassword(email: String, password: String): Long
     protected abstract suspend fun insertNewUserWith(email: String, password: String): Int
     protected abstract suspend fun getUsersWithId(id: Int): Long
     protected abstract suspend fun updateUserWith(userEntity: UserEntity): Long
+    protected abstract suspend fun getUserWithIdFromDb(id: Int): UserEntity?
 }
 
 class UserDatabaseOperationsHandler(
@@ -115,6 +123,7 @@ class UserDatabaseOperationsHandler(
     override suspend fun updateUserWith(userEntity: UserEntity): Long {
         val updateRows = newSuspendedTransaction {
             val transaction = this
+
             val isExistingUserResult = getIsUserWithEmailExists(userEntity.email)
 
             if (isExistingUserResult.isFailure) {
@@ -123,24 +132,38 @@ class UserDatabaseOperationsHandler(
 
             val isExistingUser = isExistingUserResult.getOrDefault(true)
 
-            if (isExistingUser) {
+            if (!isExistingUser) {
                 transaction.close()
             }
 
-            val updateRows = Users.update(
-                where = {
-                    Users.id eq userEntity.id
-                },
-                body = {
-                    it[email] = userEntity.email
-                    it[firstName] = userEntity.firstName
-                    it[lastName] = userEntity.lastName
-                }
-            )
+            val updateRows = Users.update(where = {
+                Users.id eq userEntity.id
+            }, body = {
+                it[email] = userEntity.email
+                it[firstName] = userEntity.firstName
+                it[lastName] = userEntity.lastName
+            })
 
             updateRows
         }
 
         return updateRows.toLong()
+    }
+
+    override suspend fun getUserWithIdFromDb(id: Int): UserEntity? {
+        return newSuspendedTransaction {
+            val users = Users.select {
+                Users.id eq id
+            }
+
+            users.firstOrNull()?.let {
+                UserEntity(
+                    id = it[Users.id],
+                    email = it[Users.email],
+                    firstName = it[Users.firstName].orEmpty(),
+                    lastName = it[Users.lastName].orEmpty()
+                )
+            }
+        }
     }
 }

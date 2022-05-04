@@ -1,7 +1,9 @@
 package com.oguzhanaslann.util
 
-fun <T> Result<T>.value(): T = getOrThrow()
+import com.oguzhanaslann.dataSource.db.entity.UserEntity
 
+fun <T> Result<T>.value(): T = getOrThrow()
+fun <T> Result<T>.failure() = exceptionOrNull()
 fun <T> Result<T>.value(default: T): T = getOrDefault(default)
 
 suspend fun <T> Result<T>.resolve(
@@ -308,5 +310,19 @@ suspend fun <R> Result<Boolean>.chainBySelfPredicate(
         }
 
         !predicate -> onPredicateFalse()
+    }
+}
+
+suspend fun<T,R> Result<T>.mapSuspend(block : suspend (T) -> R ) : Result<R>{
+    return when {
+        isSuccess -> Result.success(block(value()))
+        else -> Result.failure(failure() ?: UnknownError())
+    }
+}
+
+suspend fun<T,R> Result<T>.mapByResultSuspend(block:suspend (T) -> Result<R>) : Result<R>{
+    return when {
+        isSuccess -> block(value())
+        else -> Result.failure(failure() ?: UnknownError())
     }
 }

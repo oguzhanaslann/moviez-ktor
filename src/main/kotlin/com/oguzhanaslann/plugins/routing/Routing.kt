@@ -5,10 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.oguzhanaslann.base.ONE_HOUR_MINUTES
 import com.oguzhanaslann.base.ONE_MINUTE_MILLIS
 import com.oguzhanaslann.dataSource.db.UsersDAO
+import com.oguzhanaslann.dataSource.db.mapping.mapToDomainModel
 import com.oguzhanaslann.dataSource.db.mapping.mapToEntity
 import com.oguzhanaslann.domainModel.User
 import com.oguzhanaslann.util.chainBySelfPredicate
-import com.oguzhanaslann.util.isNotNull
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -28,13 +28,31 @@ fun Application.userRouting() {
     routing {
         authenticate {
             get(USER_WITH_ID) {
-                val id = call.parameters["id"]?.toLongOrNull()
+                val id = call.parameters["id"]?.toIntOrNull()
 
-                if (id.isNotNull()) {
-                    call.respond(User(1, "pass", "fname", "lname"))
+                if (id != null) {
+                    val isExistsInDBResult = usersDAO.getIsUserWithIdExists(id)
+                    isExistsInDBResult.chainBySelfPredicate(
+                        onPredicateFalse = {
+                            call.respond(HttpStatusCode.BadRequest, "No such a user with id: ${id}")
+                        },
+                        onMainResultFail = {
+                            call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
+                        },
+                        resultBuilderBlock = {
+                            usersDAO.getUserWithId(id)
+                        },
+                        onSuccess = { userEntity ->
+                            call.respond(HttpStatusCode.OK, userEntity.mapToDomainModel())
+                        },
+                        onOtherResultFail = {
+                            call.respond(HttpStatusCode.BadRequest, "No such a user with id: ${id}")
+                        }
+                    )
                 } else {
-                    call.respond(HttpStatusCode.BadRequest, "Please provide a proper id value.")
+                    call.respond(HttpStatusCode.BadRequest, "Please provide a valid id, provided id : $id")
                 }
+
             }
 
             post(USER) {
@@ -44,10 +62,10 @@ fun Application.userRouting() {
 
                 isExistsInDBResult.chainBySelfPredicate(
                     onPredicateFalse = {
-                        call.respond(HttpStatusCode.BadRequest,"No such a user with id: ${user.id}")
+                        call.respond(HttpStatusCode.BadRequest, "No such a user with id: ${user.id}")
                     },
                     onMainResultFail = {
-                        call.respond(HttpStatusCode.InternalServerError,"Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                     },
                     resultBuilderBlock = {
                         usersDAO.updateUser(user.mapToEntity())
@@ -56,7 +74,7 @@ fun Application.userRouting() {
                         call.respond(HttpStatusCode.OK)
                     },
                     onOtherResultFail = {
-                        call.respond(HttpStatusCode.BadRequest,"User could not be updated")
+                        call.respond(HttpStatusCode.BadRequest, "User could not be updated")
                     }
                 )
 
